@@ -1,7 +1,7 @@
 import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
 export async function POST(req: Request) {
-  const eventData = req.json();
+  const eventData = await req.json();
 
   console.log({ eventData });
 
