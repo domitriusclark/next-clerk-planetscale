@@ -14,7 +14,9 @@ export async function POST(req: Request) {
   const user = {
     id: data.id,
     email: data.email_addresses[0].email_address,
-    name: data.first_name,
+    name: data.first_name
+      ? data.first_name
+      : data.email_addresses[0].email_address,
   };
 
   await db.insertInto("users").values(user).execute();
