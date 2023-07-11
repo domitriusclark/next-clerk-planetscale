@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     });
   }
 
-  await db.deleteFrom("users").where("id", "=", data.id).execute();
+  await db.deleteFrom("user").where("id", "=", data.id).execute();
 
   return new Response("User updated in planetscale 🥳", {
     status: 200,

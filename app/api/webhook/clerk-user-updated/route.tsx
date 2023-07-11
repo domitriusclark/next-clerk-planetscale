@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   };
 
   await db
-    .updateTable("users")
+    .updateTable("user")
     .set({
       email: user.email,
       name: user.name,

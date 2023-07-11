@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         : data.email_addresses[0].email_address,
   };
 
-  await db.insertInto("users").values(user).execute();
+  await db.insertInto("user").values(user).execute();
 
   return new Response("User created in planetscale 🥳", {
     status: 201,
