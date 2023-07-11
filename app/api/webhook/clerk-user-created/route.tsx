@@ -1,6 +1,7 @@
 import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
 import db from "@/lib/database";
+import { User } from "@/kysely.codegen";
 
 export async function POST(req: Request) {
   const { data, type } = (await req.json()) as WebhookEvent;
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const user = {
+  const user: User = {
     id: data.id,
     email: data.email_addresses[0].email_address,
     name:

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "kysely-codegen"
+    "codegen": "kysely-codegen --out-file $PWD/kysely.codegen.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.21.14",

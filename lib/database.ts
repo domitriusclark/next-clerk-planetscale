@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely'
 import { PlanetScaleDialect } from 'kysely-planetscale'
 
-import { DB } from 'kysely-codegen';
+import { DB } from '@/kysely.codegen';
 
 const db = new Kysely<DB>({
   dialect: new PlanetScaleDialect({
