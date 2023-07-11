@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const { data, type } = (await req.json()) as WebhookEvent;
 
   if (type !== "user.created") {
-    return new Response("Needs to be the user.created event", {
+    return new Response("Needs to be the user.created event from Clerk", {
       status: 500,
     });
   }
