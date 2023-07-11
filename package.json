@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "codegen": "kysely-codegen"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.21.14",
@@ -28,6 +29,8 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "@clerk/clerk-sdk-node": "^4.10.15"
+    "@clerk/clerk-sdk-node": "^4.10.15",
+    "kysely-codegen": "^0.10.1",
+    "mysql2": "^3.5.1"
   }
 }
