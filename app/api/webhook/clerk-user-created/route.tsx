@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const user = {
     id: data.id,
     email: data.email_addresses[0].email_address,
-    name: data.first_name + " " + data.last_name,
+    name: data.first_name,
   };
 
   await db.insertInto("users").values(user).execute();
