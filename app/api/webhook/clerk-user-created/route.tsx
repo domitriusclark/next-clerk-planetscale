@@ -11,8 +11,6 @@ export async function POST(req: Request) {
     });
   }
 
-  console.log("User created in clerk", { data });
-
   const user = {
     id: data.id,
     email: data.email_addresses[0].email_address,
