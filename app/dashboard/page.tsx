@@ -5,7 +5,7 @@ import db from "@/lib/database";
 export default async function Dashboard() {
   async function findPlanetscaleUser(userId: string) {
     const user = await db
-      .selectFrom("users")
+      .selectFrom("user")
       .where("id", "=", userId)
       .selectAll()
       .executeTakeFirst();
