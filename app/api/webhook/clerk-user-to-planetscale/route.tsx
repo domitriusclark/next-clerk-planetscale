@@ -1,16 +1,9 @@
 import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
 export async function POST(req: Request) {
-  if (req.headers.get("x-clerk-webhook-event") === "user.created") {
-    const eventData = req.body;
+  const eventData = req.json();
 
-    console.log(eventData);
-
-    // Handle the user.created event
-    // Your custom logic here
-
-    return new Response("User created event processed successfully");
-  }
+  console.log({ eventData });
 
   return new Response("OK");
 }
