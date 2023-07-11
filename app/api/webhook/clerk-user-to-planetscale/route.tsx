@@ -1,7 +1,8 @@
-// import type { WebhookEvent } from "@clerk/clerk-sdk-node";
+import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
 export async function POST(req: Request) {
-  const event = req.body;
+  // @ts-expect-error
+  const event = req.body?.event as WebhookEvent;
 
   console.log(event);
 
