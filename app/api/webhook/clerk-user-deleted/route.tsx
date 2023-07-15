@@ -1,6 +1,6 @@
 import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
-import db from "@/lib/database";
+import pscale from "@/lib/database";
 
 export async function POST(req: Request) {
   const { data, type } = (await req.json()) as WebhookEvent;
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     });
   }
 
-  await db.deleteFrom("user").where("id", "=", data.id).execute();
+  await pscale.deleteFrom("user").where("id", "=", data.id).execute();
 
   return new Response("User deleted in planetscale 🥳", {
     status: 200,

@@ -1,6 +1,6 @@
 import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
-import db from "@/lib/database";
+import pscale from "@/lib/database";
 
 export async function POST(req: Request) {
   const { data, type } = (await req.json()) as WebhookEvent;
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     name: data.first_name + " " + data.last_name,
   };
 
-  await db
+  await pscale
     .updateTable("user")
     .set({
       email: user.email,

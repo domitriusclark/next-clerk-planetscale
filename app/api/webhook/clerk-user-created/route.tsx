@@ -1,6 +1,6 @@
 import type { WebhookEvent } from "@clerk/clerk-sdk-node";
 
-import db from "@/lib/database";
+import pscale from "@/lib/database";
 import { User } from "@/kysely.codegen";
 
 export async function POST(req: Request) {
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
         : data.email_addresses[0].email_address,
   };
 
-  await db.insertInto("user").values(user).execute();
+  await pscale.insertInto("user").values(user).execute();
 
   return new Response("User created in planetscale 🥳", {
     status: 201,
