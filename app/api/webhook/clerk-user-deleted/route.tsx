@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
   await db.deleteFrom("user").where("id", "=", data.id).execute();
 
-  return new Response("User updated in planetscale 🥳", {
+  return new Response("User deleted in planetscale 🥳", {
     status: 200,
   });
 }
