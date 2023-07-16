@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, Control } from "react-hook-form";
+
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -34,7 +35,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { Input } from "@/components/ui/input";
 import { createEvent } from "@/lib/actions";
-import { UploadButton } from "@uploadthing/react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -87,281 +87,269 @@ export default function EventForm() {
           eventMode === "both" && "my-[48px] "
         }`}
       >
-        <FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Reactadelphia meetup in Philly"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                What's your events name? Make it unique!
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    /* @ts-ignore */
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="eventMode"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your event location" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent defaultValue="in-person">
-                    <SelectItem value="in-person">In person</SelectItem>
-                    <SelectItem value="remote">Remote</SelectItem>
-                    <SelectItem value="both">Both</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  Is your event in person, remote, or both?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-
-        <FormField
-          control={control}
-          name="description"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="Today we're going to learn about building React Server Components..."
-                  />
-                </FormControl>
-              </FormItem>
-            );
-          }}
-        />
+        <EventInputField control={control} />
+        <DatePickerField control={control} />
+        <EventTypeSelectField control={control} />
+        <DescriptionTextareaField control={control} />
 
         {eventMode === "in-person" && (
           <>
-            <FormField
-              control={control}
-              name="address"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Street address</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="1600 Amphitheatre Parkway"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The street your event will be held on
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={control}
-              name="city"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="California" {...field} />
-                    </FormControl>
-                    <FormDescription>The state your event's in</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={control}
-              name="zipcode"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="94043" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Zipcode of your event's location
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            <AddressInputField control={control} />
+            <CityInputField control={control} />
+            <ZipcodeInputField control={control} />
           </>
         )}
 
-        {eventMode === "remote" && (
-          <FormField
-            control={control}
-            name="url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Event URL</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="https://twitch.tv/reactadelphia"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  The URL your event is being held at
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
+        {eventMode === "remote" && <RemoteUrlInputField control={control} />}
 
         {eventMode === "both" && (
           <>
-            <FormField
-              control={control}
-              name="address"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Street address</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="1600 Amphitheatre Parkway"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The street your event will be held on
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={control}
-              name="city"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="California" {...field} />
-                    </FormControl>
-                    <FormDescription>The state your event's in</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={control}
-              name="zipcode"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="94043" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Zipcode of your event's location
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={control}
-              name="url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Event URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://twitch.tv/reactadelphia"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    The URL your event is being held at
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <AddressInputField control={control} />
+            <CityInputField control={control} />
+            <ZipcodeInputField control={control} />
+            <RemoteUrlInputField control={control} />
           </>
         )}
 
         <Button type="submit">Submit</Button>
       </form>
     </Form>
+  );
+}
+
+function EventInputField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="name"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Event name</FormLabel>
+          <FormControl>
+            <Input placeholder="Reactadelphia meetup in Philly" {...field} />
+          </FormControl>
+          <FormDescription>
+            What's your events name? Make it unique!
+          </FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+function DatePickerField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="date"
+      render={({ field }) => (
+        <FormItem className="flex flex-col">
+          <FormLabel>Event Date</FormLabel>
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[240px] pl-3 text-left font-normal",
+                    !field.value && "text-muted-foreground"
+                  )}
+                >
+                  {field.value ? (
+                    format(field.value, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                  <CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={field.value}
+                /* @ts-ignore */
+                onSelect={field.onChange}
+                disabled={(date) =>
+                  date > new Date() || date < new Date("1900-01-01")
+                }
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+function EventTypeSelectField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="eventMode"
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your event location" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent defaultValue="in-person">
+                <SelectItem value="in-person">In person</SelectItem>
+                <SelectItem value="remote">Remote</SelectItem>
+                <SelectItem value="both">Both</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              Is your event in person, remote, or both?
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+function DescriptionTextareaField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="description"
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <Textarea
+                {...field}
+                placeholder="Today we're going to learn about building React Server Components..."
+              />
+            </FormControl>
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+function AddressInputField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="address"
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>Street address</FormLabel>
+            <FormControl>
+              <Input placeholder="1600 Amphitheatre Parkway" {...field} />
+            </FormControl>
+            <FormDescription>
+              The street your event will be held on
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+function CityInputField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="city"
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>State</FormLabel>
+            <FormControl>
+              <Input placeholder="California" {...field} />
+            </FormControl>
+            <FormDescription>The state your event's in</FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+function ZipcodeInputField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="zipcode"
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>Zipcode</FormLabel>
+            <FormControl>
+              <Input placeholder="94043" {...field} />
+            </FormControl>
+            <FormDescription>Zipcode of your event's location</FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+function RemoteUrlInputField({
+  control,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+}) {
+  return (
+    <FormField
+      control={control}
+      name="url"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Event URL</FormLabel>
+          <FormControl>
+            <Input placeholder="https://twitch.tv/reactadelphia" {...field} />
+          </FormControl>
+          <FormDescription>The URL your event is being held at</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }
