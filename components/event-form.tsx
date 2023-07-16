@@ -1,10 +1,12 @@
 "use client";
 
+import { createEvent } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm, Control } from "react-hook-form";
-
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -13,7 +15,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -30,11 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Textarea } from "@/components/ui/textarea";
-
 import { Input } from "@/components/ui/input";
-import { createEvent } from "@/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -67,10 +65,7 @@ export default function EventForm() {
     formState: { errors },
   } = form;
 
-  // 2. Define a submit handler.
   async function onSubmit(values: Partial<z.infer<typeof formSchema>>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     if (!values) {
       return;
     }
@@ -83,9 +78,7 @@ export default function EventForm() {
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`p-10 w-1/3 space-y-8 text-cyan-500 border-2 rounded-3xl border-slate-300 ${
-          eventMode === "both" && "my-[48px] "
-        }`}
+        className={`p-10 w-3/4 space-y-8 self-center text-cyan-500  rounded-3xl border-slate-300 overflow-scroll`}
       >
         <EventInputField control={control} />
         <DatePickerField control={control} />
