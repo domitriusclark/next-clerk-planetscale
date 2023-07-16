@@ -21,7 +21,7 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
-        <body>{children}</body>
+        <body className=" bg-stone-950">{children}</body>
       </html>
     </ClerkProvider>
   );
