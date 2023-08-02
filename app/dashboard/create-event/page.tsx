@@ -1,17 +1,13 @@
 import EventForm from "@/components/event-form";
 import Navbar from "@/components/navbar";
-import { currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 
 export default async function CreateEventPage() {
-  const user = await currentUser();
-
-  if (!user) {
-    return;
-  }
+  const { sessionId } = auth();
 
   return (
     <main className="flex flex-col h-screen overflow-auto">
-      <Navbar isLoggedIn={user && true} />
+      <Navbar isSignedIn={sessionId ? true : false} />
 
       <EventForm />
     </main>
