@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export async function getAllEvents() {
+async function getAllEvents() {
   const events = await pscale
     .selectFrom("event")
     .orderBy("created_at", "desc")
