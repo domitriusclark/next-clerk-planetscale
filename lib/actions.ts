@@ -19,10 +19,23 @@ export async function createEvent(event: Partial<Event>) {
   await pscale
     .insertInto("event")
     .values({
-      user_id: userId,
       ...event,
+      user_id: userId,
+      created_at: new Date(),
     })
     .execute();
 
-  redirect("/dashboard");
+  return redirect("/dashboard");
+}
+
+export async function findPlanetscaleUser(userId: string) {
+  "use server";
+
+  const user = await pscale
+    .selectFrom("user")
+    .where("id", "=", userId)
+    .selectAll()
+    .executeTakeFirst();
+
+  return user;
 }

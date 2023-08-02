@@ -1,3 +1,9 @@
+import type { ColumnType } from "kysely";
+
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
+
 export interface Event {
   id: number | null;
   name: string | null;
@@ -10,6 +16,7 @@ export interface Event {
   city: string | null;
   zipcode: string | null;
   state: string | null;
+  created_at: Date | null;
 }
 
 export interface EventRegistration {

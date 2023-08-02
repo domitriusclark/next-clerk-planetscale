@@ -1,26 +1,49 @@
-import Navbar from "@/components/navbar";
+import type { Event } from "@/kysely.codegen";
+
 import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import db from "@/lib/database";
+import pscale from "@/lib/database";
+
+import Navbar from "@/components/navbar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+export async function getAllEvents() {
+  const events = await pscale
+    .selectFrom("event")
+    .orderBy("created_at", "desc")
+    .selectAll()
+    .execute();
+
+  return events;
+}
+
+function EventCard({ event }: { event: Event }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{event.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CardDescription>{event.description}</CardDescription>
+        {event.eventMode === ""}
+      </CardContent>
+      <CardFooter>
+        <p>Event Footer</p>
+      </CardFooter>
+    </Card>
+  );
+}
 
 export default async function Dashboard() {
-  async function findPlanetscaleUser(userId: string) {
-    const user = await db
-      .selectFrom("user")
-      .where("id", "=", userId)
-      .selectAll()
-      .executeTakeFirst();
+  const { sessionId } = auth();
 
-    return user;
-  }
-
-  const { userId, sessionId } = auth();
-
-  if (!userId) {
-    redirect("/");
-  }
-
-  const planetscaleUser = await findPlanetscaleUser(userId);
+  const events = await getAllEvents();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,7 +51,11 @@ export default async function Dashboard() {
 
       <div className="flex flex-col items-center flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
-          <div className="flex flex-col justify-center gap-3"></div>
+          <div className="flex flex-col justify-center gap-3">
+            {events.map((event) => (
+              <EventCard event={event} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

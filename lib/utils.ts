@@ -1,13 +1,6 @@
-import { type ClassValue, clsx } from "clsx"
-import type { OurFileRouter } from "@/app/api/uploadthing/core";
-import { twMerge } from "tailwind-merge"
-import { generateComponents } from "@uploadthing/react";
- 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
- 
+import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx";
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
-
-
