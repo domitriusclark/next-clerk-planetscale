@@ -25,7 +25,7 @@ export async function getAllEvents() {
 
 function EventCard({ event }: { event: Event }) {
   return (
-    <Card key={event.id}>
+    <Card>
       <CardHeader>
         <CardTitle>{event.name}</CardTitle>
       </CardHeader>
@@ -53,7 +53,7 @@ export default async function Dashboard() {
         <div className="w-full max-w-md space-y-8">
           <div className="flex flex-col justify-center gap-3">
             {events.map((event) => (
-              <EventCard event={event} />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
         </div>
