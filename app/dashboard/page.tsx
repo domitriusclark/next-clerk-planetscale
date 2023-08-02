@@ -23,18 +23,31 @@ export async function getAllEvents() {
   return events;
 }
 
+function EventLocation({ eventMode }: { eventMode: string }) {
+  switch (eventMode) {
+    case "remote":
+      return <p>Remote</p>;
+    case "in-person":
+      return <p>In Person</p>;
+    case "both":
+      return <p>Both</p>;
+  }
+}
+
 function EventCard({ event }: { event: Event }) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>{event.name}</CardTitle>
+        <CardDescription>{event.description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <CardDescription>{event.description}</CardDescription>
-        {event.eventMode === ""}
+        {event.eventMode && <EventLocation eventMode={event.eventMode} />}
       </CardContent>
       <CardFooter>
-        <p>Event Footer</p>
+        <p>
+          When: {event.date && new Date(event.date).toLocaleDateString("en-US")}
+        </p>
       </CardFooter>
     </Card>
   );
