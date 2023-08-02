@@ -3,6 +3,7 @@
 import pscale from "@/lib/database";
 import { Event } from "@/kysely.codegen";
 import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 export async function createEvent(event: Partial<Event>) {
   const { userId } = auth();
@@ -15,7 +16,7 @@ export async function createEvent(event: Partial<Event>) {
     return;
   }
 
-  const newEvent = await pscale
+  await pscale
     .insertInto("event")
     .values({
       user_id: userId,
@@ -23,5 +24,5 @@ export async function createEvent(event: Partial<Event>) {
     })
     .execute();
 
-  return;
+  redirect("/dashboard");
 }

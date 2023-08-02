@@ -78,7 +78,7 @@ export default function EventForm() {
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`p-10 w-3/4 space-y-8 self-center text-cyan-500  rounded-3xl border-slate-300 overflow-scroll`}
+        className={`p-10 w-3/4 space-y-8 self-center text-black  rounded-3xl border-slate-300 overflow-scroll`}
       >
         <EventInputField control={control} />
         <DatePickerField control={control} />

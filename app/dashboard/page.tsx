@@ -1,5 +1,6 @@
 import Navbar from "@/components/navbar";
-import { currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 import db from "@/lib/database";
 
 export default async function Dashboard() {
@@ -13,19 +14,17 @@ export default async function Dashboard() {
     return user;
   }
 
-  const user = await currentUser();
+  const { userId, sessionId } = auth();
 
-  if (!user) {
-    return;
+  if (!userId) {
+    redirect("/");
   }
 
-  const id = user.id;
-
-  const planetscaleUser = await findPlanetscaleUser(id);
+  const planetscaleUser = await findPlanetscaleUser(userId);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar isLoggedIn={user && true} />
+      <Navbar isSignedIn={sessionId ? true : false} />
 
       <div className="flex flex-col items-center flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
