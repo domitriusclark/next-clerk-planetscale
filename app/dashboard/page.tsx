@@ -25,7 +25,7 @@ export async function getAllEvents() {
 
 function EventCard({ event }: { event: Event }) {
   return (
-    <Card>
+    <Card key={event.id}>
       <CardHeader>
         <CardTitle>{event.name}</CardTitle>
       </CardHeader>
