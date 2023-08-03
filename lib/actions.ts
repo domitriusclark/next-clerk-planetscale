@@ -3,9 +3,10 @@
 import pscale from "@/lib/database";
 import { Event } from "@/kysely.codegen";
 import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
 
-export async function createEvent(event: Partial<Event>) {
+export async function createEvent(
+  event: Omit<Event, "id" | "user_id" | "created_at">
+) {
   const { userId } = auth();
 
   if (!userId) {
@@ -19,18 +20,24 @@ export async function createEvent(event: Partial<Event>) {
   try {
     await pscale
       .insertInto("event")
-      .values({
-        ...event,
-        user_id: userId,
-        created_at: new Date(),
-      })
+      .values({ ...event, user_id: userId })
       .execute();
 
-    return { message: "Event created successfully" };
+    return;
   } catch (e) {
     console.log(e);
-    // @ts-expect-error
-    return { message: e.message };
+    return;
+  }
+}
+
+export async function deleteEvent(eventId: number) {
+  try {
+    await pscale.deleteFrom("event").where("id", "=", eventId).execute();
+
+    return { message: "Event deleted successfully" };
+  } catch (e) {
+    console.log(e);
+    return { message: e };
   }
 }
 

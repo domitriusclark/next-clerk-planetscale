@@ -6,6 +6,8 @@ import * as z from "zod";
 import { useForm, Control } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import type { Event } from "@/kysely.codegen";
 
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -42,7 +44,7 @@ const formSchema = z.object({
   date: z.date({
     required_error: "Please select a date",
   }),
-  eventMode: z.string(),
+  event_mode: z.string(),
   address: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
@@ -51,6 +53,7 @@ const formSchema = z.object({
 });
 
 export default function EventForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,16 +68,29 @@ export default function EventForm() {
     formState: { errors },
   } = form;
 
-  async function onSubmit(values: Partial<z.infer<typeof formSchema>>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values) {
       return;
     }
-    const event = await createEvent(values);
 
-    return event;
+    const event = {
+      name: values.name,
+      description: values.description,
+      date: values.date ? new Date(values.date) : null,
+      event_mode: values.event_mode,
+      address: values.address ? values.address : null,
+      city: values.city ? values.city : null,
+      state: values.state ? values.state : null,
+      zipcode: values.zipcode ? values.zipcode : null,
+      url: values.url ? values.url : null,
+    } satisfies Omit<Event, "id" | "user_id" | "created_at">;
+
+    await createEvent(event);
+
+    router.push("/dashboard");
   }
 
-  const eventMode = watch("eventMode");
+  const eventMode = watch("event_mode");
 
   return (
     <Form {...form}>
@@ -84,7 +100,7 @@ export default function EventForm() {
       >
         <EventInputField control={control} />
         <DatePickerField control={control} />
-        <EventTypeSelectField control={control} />
+        <EventModeSelectField control={control} />
         <DescriptionTextareaField control={control} />
 
         {eventMode === "in-person" && (
@@ -188,7 +204,7 @@ function DatePickerField({
   );
 }
 
-function EventTypeSelectField({
+function EventModeSelectField({
   control,
 }: {
   control: Control<z.infer<typeof formSchema>>;
@@ -196,7 +212,7 @@ function EventTypeSelectField({
   return (
     <FormField
       control={control}
-      name="eventMode"
+      name="event_mode"
       render={({ field }) => {
         return (
           <FormItem>
