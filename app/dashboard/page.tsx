@@ -1,9 +1,7 @@
 import type { Event } from "@/kysely.codegen";
 
-import { auth } from "@clerk/nextjs";
 import pscale from "@/lib/database";
 
-import Navbar from "@/components/navbar";
 import {
   Card,
   CardContent,
@@ -31,12 +29,14 @@ function EventLocation({ eventMode }: { eventMode: string }) {
       return <p>In Person</p>;
     case "both":
       return <p>Both</p>;
+    default:
+      return "in-person";
   }
 }
 
 function EventCard({ event }: { event: Event }) {
   return (
-    <Card>
+    <Card className="w-full text-white bg-black md:w-2/3 xl:w-1/4 h-60">
       <CardHeader>
         <CardTitle>{event.name}</CardTitle>
         <CardDescription>{event.description}</CardDescription>
@@ -54,22 +54,14 @@ function EventCard({ event }: { event: Event }) {
 }
 
 export default async function Dashboard() {
-  const { sessionId } = auth();
-
   const events = await getAllEvents();
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar isSignedIn={sessionId ? true : false} />
-
-      <div className="flex flex-col items-center flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
-          <div className="flex flex-col justify-center gap-3">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </div>
+      <div className="flex flex-wrap justify-center gap-6 p-8">
+        {events.map((event) => (
+          <EventCard key={event.id} event={event} />
+        ))}
       </div>
     </div>
   );

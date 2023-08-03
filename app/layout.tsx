@@ -3,6 +3,7 @@ import "@uploadthing/react/styles.css";
 import type { Metadata } from "next";
 import { dark } from "@clerk/themes";
 import { ClerkProvider } from "@clerk/nextjs";
+import Navbar from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "Clerk Events App",
@@ -21,7 +22,10 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
-        <body className=" bg-stone-950">{children}</body>
+        <body className="bg-stone-950">
+          <Navbar />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

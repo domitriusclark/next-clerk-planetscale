@@ -69,7 +69,9 @@ export default function EventForm() {
     if (!values) {
       return;
     }
-    await createEvent(values);
+    const event = await createEvent(values);
+
+    return event;
   }
 
   const eventMode = watch("eventMode");

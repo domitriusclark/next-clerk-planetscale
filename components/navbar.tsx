@@ -1,24 +1,23 @@
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, auth } from "@clerk/nextjs";
 
-type Props = {
-  isSignedIn: boolean | undefined;
-};
+export default function Navbar() {
+  const { sessionId } = auth();
 
-export default function Navbar({ isSignedIn }: Props) {
   return (
-    <nav className="flex flex-col items-center pt-10 pr-10 text-white">
-      <div className="flex self-end gap-10">
+    <nav className="flex flex-col h-20 text-white ">
+      <div className="flex items-center self-end h-full gap-10 pr-5">
         <Link
-          className="px-2 py-3 mb-8 text-sm text-white bg-blue-600 rounded-lg"
+          className="flex items-center h-12 px-2 text-sm text-white bg-blue-600 rounded-lg "
           href="/dashboard/create-event"
         >
           Create Event
         </Link>
         <Link href="/">Home</Link>
-        {isSignedIn ? (
+        {sessionId ? (
           <>
             <Link href="/dashboard">Dashboard</Link>
+
             <UserButton afterSignOutUrl="/" />
           </>
         ) : (

@@ -16,16 +16,22 @@ export async function createEvent(event: Partial<Event>) {
     return;
   }
 
-  await pscale
-    .insertInto("event")
-    .values({
-      ...event,
-      user_id: userId,
-      created_at: new Date(),
-    })
-    .execute();
+  try {
+    await pscale
+      .insertInto("event")
+      .values({
+        ...event,
+        user_id: userId,
+        created_at: new Date(),
+      })
+      .execute();
 
-  return redirect("/dashboard");
+    return { message: "Event created successfully" };
+  } catch (e) {
+    console.log(e);
+    // @ts-expect-error
+    return { message: e.message };
+  }
 }
 
 export async function findPlanetscaleUser(userId: string) {
