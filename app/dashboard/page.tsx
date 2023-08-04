@@ -34,7 +34,14 @@ function EventLocation({ eventMode }: { eventMode: string }) {
   }
 }
 
-function EventCard({ event }: { event: Event }) {
+function EventCard({
+  event,
+}: {
+  event: Omit<Event, "id" | "created_at"> & {
+    id: number;
+    created_at: Date | null;
+  };
+}) {
   return (
     <Card className="w-full text-white bg-black md:w-2/3 xl:w-1/4 h-60">
       <CardHeader>
@@ -42,7 +49,7 @@ function EventCard({ event }: { event: Event }) {
         <CardDescription>{event.description}</CardDescription>
       </CardHeader>
       <CardContent>
-        {event.eventMode && <EventLocation eventMode={event.eventMode} />}
+        {event.event_mode && <EventLocation eventMode={event.event_mode} />}
       </CardContent>
       <CardFooter>
         <p>
