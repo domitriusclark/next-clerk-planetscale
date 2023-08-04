@@ -3,6 +3,7 @@
 import pscale from "@/lib/database";
 import { Event } from "@/kysely.codegen";
 import { auth } from "@clerk/nextjs";
+import { revalidatePath } from "next/cache";
 
 export async function createEvent(
   event: Omit<Event, "id" | "user_id" | "created_at">
@@ -33,8 +34,7 @@ export async function createEvent(
 export async function deleteEvent(eventId: number) {
   try {
     await pscale.deleteFrom("event").where("id", "=", eventId).execute();
-
-    return { message: "Event deleted successfully" };
+    revalidatePath("/dashboard");
   } catch (e) {
     console.log(e);
     return { message: e };

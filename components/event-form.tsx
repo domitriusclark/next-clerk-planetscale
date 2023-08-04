@@ -83,7 +83,7 @@ export default function EventForm() {
       state: values.state ? values.state : null,
       zipcode: values.zipcode ? values.zipcode : null,
       url: values.url ? values.url : null,
-    } satisfies Omit<Event, "id" | "user_id" | "created_at">;
+    } as Omit<Event, "id" | "user_id" | "created_at">;
 
     await createEvent(event);
 
