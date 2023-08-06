@@ -1,13 +1,14 @@
 "use client";
+import type { Event } from "@/kysely.codegen";
 
-import { createEvent } from "@/lib/actions";
+import * as React from "react";
+import { createEvent, updateEvent } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm, Control } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import type { Event } from "@/kysely.codegen";
 
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,6 +37,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
+type PartialEvent = Omit<Event, "id" | "user_id" | "created_at">;
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -52,21 +55,31 @@ const formSchema = z.object({
   url: z.string().optional(),
 });
 
-export default function EventForm() {
+export default function EventForm({
+  editableValues,
+  eventId,
+}: {
+  editableValues?: PartialEvent;
+  eventId?: number;
+}) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-    },
   });
 
-  const {
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors },
-  } = form;
+  React.useEffect(() => {
+    if (editableValues) {
+      const formValuesWithoutNull = Object.fromEntries(
+        Object.entries(editableValues).filter(([_, value]) => value !== null)
+      );
+      form.reset((formValues) => ({
+        ...formValues,
+        ...formValuesWithoutNull,
+      }));
+    }
+  }, [editableValues, form.reset]);
+
+  const { handleSubmit, control, watch } = form;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values) {
@@ -83,9 +96,14 @@ export default function EventForm() {
       state: values.state ? values.state : null,
       zipcode: values.zipcode ? values.zipcode : null,
       url: values.url ? values.url : null,
-    } as Omit<Event, "id" | "user_id" | "created_at">;
+    } as PartialEvent;
 
-    await createEvent(event);
+    if (editableValues) {
+      const id = Number(eventId);
+      await updateEvent(id, event);
+    } else {
+      await createEvent(event);
+    }
 
     router.push("/dashboard");
   }
@@ -100,7 +118,10 @@ export default function EventForm() {
       >
         <EventInputField control={control} />
         <DatePickerField control={control} />
-        <EventModeSelectField control={control} />
+        <EventModeSelectField
+          control={control}
+          editableValues={editableValues}
+        />
         <DescriptionTextareaField control={control} />
 
         {eventMode === "in-person" && (
@@ -122,7 +143,11 @@ export default function EventForm() {
           </>
         )}
 
-        <Button type="submit">Submit</Button>
+        {editableValues ? (
+          <Button type="submit">Save</Button>
+        ) : (
+          <Button type="submit">Create</Button>
+        )}
       </form>
     </Form>
   );
@@ -206,17 +231,26 @@ function DatePickerField({
 
 function EventModeSelectField({
   control,
+  editableValues,
 }: {
   control: Control<z.infer<typeof formSchema>>;
+  editableValues?: PartialEvent;
 }) {
   return (
     <FormField
       control={control}
       name="event_mode"
       render={({ field }) => {
+        const defaultEventMode =
+          editableValues && typeof editableValues.event_mode === "string"
+            ? editableValues.event_mode
+            : field.value;
         return (
           <FormItem>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select
+              onValueChange={field.onChange}
+              defaultValue={defaultEventMode}
+            >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your event location" />

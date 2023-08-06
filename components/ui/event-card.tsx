@@ -1,6 +1,7 @@
 "use client";
 
 import type { Event } from "@/kysely.codegen";
+import { useRouter } from "next/navigation";
 
 import { deleteEvent } from "@/lib/actions";
 
@@ -38,6 +39,7 @@ export default function EventCard({
   };
   userId: string;
 }) {
+  const router = useRouter();
   return (
     <Card className="w-full text-white bg-black md:w-2/3 xl:w-1/4 h-60">
       <CardHeader>
@@ -53,7 +55,9 @@ export default function EventCard({
       <CardFooter className="flex justify-end gap-3">
         {event.user_id === userId && (
           <>
-            <Button>
+            <Button
+              onClick={() => router.push(`/dashboard/edit-event/${event.id}`)}
+            >
               <Pencil color="yellow" />
             </Button>
             <Button onClick={async () => await deleteEvent(event.id)}>

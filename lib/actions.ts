@@ -41,6 +41,25 @@ export async function deleteEvent(eventId: number) {
   }
 }
 
+export async function updateEvent(
+  eventId: number,
+  event: Omit<Event, "id" | "user_id" | "created_at">
+) {
+  console.log("Does this run?");
+  try {
+    await pscale
+      .updateTable("event")
+      .set(event)
+      .where("id", "=", eventId)
+      .executeTakeFirst();
+
+    console.log("Updated Event");
+  } catch (e) {
+    console.log(e);
+    return { message: e };
+  }
+}
+
 export async function findPlanetscaleUser(userId: string) {
   "use server";
 
