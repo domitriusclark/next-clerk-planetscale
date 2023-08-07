@@ -56,7 +56,9 @@ export default function EventCard({
         {event.user_id === userId && (
           <>
             <Button
-              onClick={() => router.push(`/dashboard/edit-event/${event.id}`)}
+              onClick={() =>
+                router.push(`/dashboard/event/edit-event/${event.id}`)
+              }
             >
               <Pencil color="yellow" />
             </Button>

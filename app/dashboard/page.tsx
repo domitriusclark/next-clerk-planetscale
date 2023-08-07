@@ -23,7 +23,7 @@ export default async function Dashboard() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-wrap justify-center gap-6 p-8">
+      <div className="flex flex-wrap justify-start gap-6 p-8">
         {events.map((event) => (
           <EventCard key={event.id} userId={userId} event={event} />
         ))}

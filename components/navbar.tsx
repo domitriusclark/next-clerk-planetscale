@@ -9,7 +9,7 @@ export default function Navbar() {
       <div className="flex items-center self-end h-full gap-10 pr-5">
         <Link
           className="flex items-center h-12 px-2 text-sm text-white bg-blue-600 rounded-lg "
-          href="/dashboard/create-event"
+          href="/dashboard/event/create-event"
         >
           Create Event
         </Link>

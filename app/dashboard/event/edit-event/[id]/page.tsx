@@ -19,8 +19,11 @@ export default async function EditEventForm({
   }
 
   return (
-    <main className="flex flex-col h-screen overflow-auto">
-      <EventForm editableValues={event} eventId={eventId} />
-    </main>
+    <>
+      <section className="w-1/2">
+        <EventForm editableValues={event} eventId={eventId} />
+      </section>
+      <section className="w-1/2"></section>
+    </>
   );
 }
