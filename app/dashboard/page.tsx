@@ -1,7 +1,7 @@
 import pscale from "@/lib/database";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import EventCard from "@/components/ui/event-card";
+import EventCard from "@/components/event-card";
 
 async function getAllEvents() {
   const events = await pscale

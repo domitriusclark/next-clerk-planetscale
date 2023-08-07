@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { dark } from "@clerk/themes";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/navbar";
+import ThemeProvider from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Clerk Events App",
@@ -21,10 +22,12 @@ export default function RootLayout({
         baseTheme: dark,
       }}
     >
-      <html lang="en">
-        <body className="bg-stone-950">
-          <Navbar />
-          {children}
+      <html lang="en" suppressHydrationWarning>
+        <body>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Navbar />
+            <main>{children}</main>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

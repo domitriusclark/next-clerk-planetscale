@@ -41,7 +41,7 @@ export default function EventCard({
 }) {
   const router = useRouter();
   return (
-    <Card className="w-full text-white bg-black md:w-2/3 xl:w-1/4 h-60">
+    <Card className="w-full md:w-2/5 lg:w-2/4 xl:w-1/4 h-60">
       <CardHeader>
         <CardTitle>{event.name}</CardTitle>
         <CardDescription>{event.description}</CardDescription>
@@ -52,7 +52,7 @@ export default function EventCard({
           When: {event.date && new Date(event.date).toLocaleDateString("en-US")}
         </p>
       </CardContent>
-      <CardFooter className="flex justify-end gap-3">
+      <CardFooter className="flex justify-between">
         {event.user_id === userId && (
           <>
             <Button
@@ -60,10 +60,10 @@ export default function EventCard({
                 router.push(`/dashboard/event/edit-event/${event.id}`)
               }
             >
-              <Pencil color="yellow" />
+              Edit
             </Button>
             <Button onClick={async () => await deleteEvent(event.id)}>
-              <Trash2 color="red" />
+              Delete
             </Button>
           </>
         )}

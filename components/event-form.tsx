@@ -68,6 +68,7 @@ export default function EventForm({
   });
 
   React.useEffect(() => {
+    // This makes it so that the empty input values are not set to null
     if (editableValues) {
       const formValuesWithoutNull = Object.fromEntries(
         Object.entries(editableValues).filter(([_, value]) => value !== null)
@@ -111,45 +112,67 @@ export default function EventForm({
   const eventMode = watch("event_mode");
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={`p-10 w-3/4 space-y-8 self-center text-black  rounded-3xl border-slate-300 overflow-scroll`}
-      >
-        <EventInputField control={control} />
-        <DatePickerField control={control} />
-        <EventModeSelectField
-          control={control}
-          editableValues={editableValues}
-        />
-        <DescriptionTextareaField control={control} />
+    <div className="flex w-full h-full">
+      <section className="flex flex-col items-center w-1/2 overflow-scroll">
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-2/3 mt-16 space-y-6 "
+          >
+            <EventInputField control={control} />
+            <DatePickerField control={control} />
+            <EventModeSelectField
+              control={control}
+              editableValues={editableValues}
+            />
+            <DescriptionTextareaField control={control} />
 
-        {eventMode === "in-person" && (
-          <>
-            <AddressInputField control={control} />
-            <CityInputField control={control} />
-            <ZipcodeInputField control={control} />
-          </>
-        )}
+            {eventMode === "in-person" && (
+              <>
+                <AddressInputField control={control} />
+                <CityInputField control={control} />
+                <ZipcodeInputField control={control} />
+              </>
+            )}
 
-        {eventMode === "remote" && <RemoteUrlInputField control={control} />}
+            {eventMode === "remote" && (
+              <RemoteUrlInputField control={control} />
+            )}
 
-        {eventMode === "both" && (
-          <>
-            <AddressInputField control={control} />
-            <CityInputField control={control} />
-            <ZipcodeInputField control={control} />
-            <RemoteUrlInputField control={control} />
-          </>
-        )}
+            {eventMode === "both" && (
+              <>
+                <AddressInputField control={control} />
+                <CityInputField control={control} />
+                <ZipcodeInputField control={control} />
+                <RemoteUrlInputField control={control} />
+              </>
+            )}
 
-        {editableValues ? (
-          <Button type="submit">Save</Button>
-        ) : (
-          <Button type="submit">Create</Button>
-        )}
-      </form>
-    </Form>
+            <Button>{editableValues ? "Save" : "Create"}</Button>
+          </form>
+        </Form>
+      </section>
+      <section className="w-1/2">
+        <EventPreview values={form.getValues()} />
+      </section>
+    </div>
+  );
+}
+
+function EventPreview({ values }: { values: z.infer<typeof formSchema> }) {
+  const { name, description, date, event_mode, address, url } = values;
+
+  return (
+    <div className="flex flex-col items-center justify-center w-full h-full p-4 space-y-4 text-center border-l-2 border-slate-200">
+      <h1 className="text-3xl font-bold">{name}</h1>
+      <p className="text-lg">{description}</p>
+      <p className="text-lg">
+        {date && format(new Date(date), "MMMM do, yyyy")}
+      </p>
+      <p className="text-lg">{event_mode}</p>
+      {address && <p className="text-lg">{address}</p>}
+      {url && <p className="text-lg">{url}</p>}
+    </div>
   );
 }
 

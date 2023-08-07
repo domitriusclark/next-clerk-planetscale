@@ -18,12 +18,5 @@ export default async function EditEventForm({
     redirect("/dashboard");
   }
 
-  return (
-    <>
-      <section className="w-1/2">
-        <EventForm editableValues={event} eventId={eventId} />
-      </section>
-      <section className="w-1/2"></section>
-    </>
-  );
+  return <EventForm editableValues={event} eventId={eventId} />;
 }
