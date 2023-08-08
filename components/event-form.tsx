@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { UploadButton, UploadDropzone } from "./upload-button";
 
 type PartialEvent = Omit<Event, "id" | "user_id" | "created_at">;
 
@@ -121,6 +122,7 @@ export default function EventForm({
           >
             <EventInputField control={control} />
             <DatePickerField control={control} />
+            <UploadDropzone endpoint="imageUploader" />
             <EventModeSelectField
               control={control}
               editableValues={editableValues}
@@ -238,9 +240,6 @@ function DatePickerField({
                 selected={field.value}
                 /* @ts-ignore */
                 onSelect={field.onChange}
-                disabled={(date) =>
-                  date > new Date() || date < new Date("1900-01-01")
-                }
                 initialFocus
               />
             </PopoverContent>
