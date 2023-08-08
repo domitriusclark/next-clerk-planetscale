@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { UploadButton, UploadDropzone } from "./upload-button";
+import { UploadDropzone } from "./upload-button";
 
 type PartialEvent = Omit<Event, "id" | "user_id" | "created_at">;
 

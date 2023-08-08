@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { UserButton, auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
+import UserButton from "./user-button";
 import { ModeToggle } from "./theme-toggle";
 
 export default function Navbar() {
@@ -26,7 +27,7 @@ export default function Navbar() {
       </div>
       <div className="flex items-center h-full gap-6 ">
         <ModeToggle />
-        <UserButton afterSignOutUrl="/" />
+        <UserButton />
       </div>
     </nav>
   );

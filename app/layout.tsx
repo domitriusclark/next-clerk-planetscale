@@ -1,7 +1,6 @@
 import "./globals.css";
 import "@uploadthing/react/styles.css";
 import type { Metadata } from "next";
-import { dark } from "@clerk/themes";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/navbar";
 import ThemeProvider from "@/components/theme-provider";
@@ -17,11 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: dark,
-      }}
-    >
+    <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

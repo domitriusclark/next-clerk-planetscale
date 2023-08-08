@@ -45,7 +45,6 @@ export async function updateEvent(
   eventId: number,
   event: Omit<Event, "id" | "user_id" | "created_at">
 ) {
-  console.log("Does this run?");
   try {
     await pscale
       .updateTable("event")
@@ -61,8 +60,6 @@ export async function updateEvent(
 }
 
 export async function findPlanetscaleUser(userId: string) {
-  "use server";
-
   const user = await pscale
     .selectFrom("user")
     .where("id", "=", userId)
