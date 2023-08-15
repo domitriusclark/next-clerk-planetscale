@@ -2,13 +2,13 @@
 import type { Event } from "@/kysely.codegen";
 
 import * as React from "react";
-import { createEvent, updateEvent } from "@/lib/actions";
+import { createEvent, updateEvent, uploadImage } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useForm, Control } from "react-hook-form";
+import { useForm, Control, FieldPath } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
+import { useController } from "react-hook-form";
 
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { UploadDropzone } from "./upload-button";
+import { Label } from "@/components/ui/label";
 
 type PartialEvent = Omit<Event, "id" | "user_id" | "created_at">;
 
@@ -48,6 +48,7 @@ const formSchema = z.object({
   date: z.date({
     required_error: "Please select a date",
   }),
+  cover_image: z.instanceof(File),
   event_mode: z.string(),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -56,6 +57,16 @@ const formSchema = z.object({
   url: z.string().optional(),
 });
 
+function getBase64(file: File): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+}
+
 export default function EventForm({
   editableValues,
   eventId,
@@ -63,13 +74,12 @@ export default function EventForm({
   editableValues?: PartialEvent;
   eventId?: number;
 }) {
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   React.useEffect(() => {
-    // This makes it so that the empty input values are not set to null
+    // This makes it so that the empty input values are not set to null on edit
     if (editableValues) {
       const formValuesWithoutNull = Object.fromEntries(
         Object.entries(editableValues).filter(([_, value]) => value !== null)
@@ -104,10 +114,8 @@ export default function EventForm({
       const id = Number(eventId);
       await updateEvent(id, event);
     } else {
-      await createEvent(event);
+      await createEvent(event, await getBase64(values.cover_image));
     }
-
-    router.push("/dashboard");
   }
 
   const eventMode = watch("event_mode");
@@ -122,7 +130,15 @@ export default function EventForm({
           >
             <EventInputField control={control} />
             <DatePickerField control={control} />
-            <UploadDropzone endpoint="imageUploader" />
+            <ImageInputField
+              control={control}
+              name="cover_image"
+              imageUrl={
+                editableValues && editableValues.cover_image !== null
+                  ? editableValues.cover_image
+                  : ""
+              }
+            />
             <EventModeSelectField
               control={control}
               editableValues={editableValues}
@@ -150,7 +166,7 @@ export default function EventForm({
               </>
             )}
 
-            <Button>{editableValues ? "Save" : "Create"}</Button>
+            <Button type="submit">{editableValues ? "Save" : "Create"}</Button>
           </form>
         </Form>
       </section>
@@ -178,6 +194,40 @@ function EventPreview({ values }: { values: z.infer<typeof formSchema> }) {
   );
 }
 
+function ImageInputField({
+  control,
+  name,
+  imageUrl,
+}: {
+  control: Control<z.infer<typeof formSchema>>;
+  name: FieldPath<z.infer<typeof formSchema>>;
+  imageUrl?: string;
+}) {
+  const { field } = useController({ name, control });
+  const [image, setImage] = React.useState(imageUrl ? imageUrl : "");
+
+  const onAvatarChange = React.useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files?.[0]) {
+        const base64 = await getBase64(event.target.files[0]);
+
+        setImage(base64);
+        field.onChange(event.target.files[0]);
+      }
+    },
+    []
+  );
+
+  return (
+    <div className="flex flex-col">
+      <Label className="mb-2">Banner Image</Label>
+
+      <Input type="file" onChange={onAvatarChange} />
+      {image && <img src={image} className="w-2/3 mt-5 rounded-md " />}
+    </div>
+  );
+}
+
 function EventInputField({
   control,
 }: {
@@ -191,7 +241,7 @@ function EventInputField({
         <FormItem>
           <FormLabel>Event name</FormLabel>
           <FormControl>
-            <Input placeholder="Reactadelphia meetup in Philly" {...field} />
+            <Input {...field} placeholder="Reactadelphia meetup in Philly" />
           </FormControl>
           <FormDescription>
             What's your events name? Make it unique!

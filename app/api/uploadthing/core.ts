@@ -1,5 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { currentUser } from "@clerk/nextjs";
+import pscale from "@/lib/database";
 
 const f = createUploadthing();
 
@@ -14,8 +15,6 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);
-
-      console.log("file url", file.url);
     }),
 } satisfies FileRouter;
 

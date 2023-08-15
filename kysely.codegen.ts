@@ -17,6 +17,7 @@ export interface Event {
   zipcode: string | null;
   state: string | null;
   created_at: Generated<Date | null>;
+  cover_image: string | null;
 }
 
 export interface EventRegistration {
