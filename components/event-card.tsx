@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Selectable } from "kysely";
 
 function EventLocation({ eventMode }: { eventMode: string }) {
   switch (eventMode) {
@@ -33,10 +34,7 @@ export default function EventCard({
   event,
   userId,
 }: {
-  event: Omit<Event, "id" | "created_at"> & {
-    id: number;
-    created_at: Date | null;
-  };
+  event: Selectable<Event>;
   userId: string;
 }) {
   const router = useRouter();

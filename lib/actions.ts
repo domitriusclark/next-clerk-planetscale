@@ -5,6 +5,7 @@ import { Event } from "@/kysely.codegen";
 import { auth } from "@clerk/nextjs";
 import { utapi } from "uploadthing/server";
 import { redirect } from "next/navigation";
+import { Selectable, Updateable, Insertable } from "kysely";
 
 export async function uploadImage(imageUrl: string) {
   async function dataUrlToFile(
@@ -24,7 +25,7 @@ export async function uploadImage(imageUrl: string) {
 }
 
 export async function createEvent(
-  event: Omit<Event, "id" | "user_id" | "created_at" | "cover_image">,
+  event: Omit<Insertable<Event>, "user_id">,
   image: string
 ) {
   const { userId } = auth();
@@ -68,10 +69,7 @@ export async function deleteEvent(eventId: number) {
   redirect("/dashboard");
 }
 
-export async function updateEvent(
-  eventId: number,
-  event: Omit<Event, "id" | "user_id" | "created_at" | "cover_image">
-) {
+export async function updateEvent(eventId: number, event: Updateable<Event>) {
   const { userId } = auth();
 
   if (!userId) {

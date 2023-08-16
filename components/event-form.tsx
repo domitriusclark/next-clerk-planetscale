@@ -2,7 +2,7 @@
 import type { Event } from "@/kysely.codegen";
 
 import * as React from "react";
-import { createEvent, updateEvent, uploadImage } from "@/lib/actions";
+import { createEvent, updateEvent } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm, Control, FieldPath } from "react-hook-form";
@@ -37,6 +37,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Selectable } from "kysely";
 
 type PartialEvent = Omit<Event, "id" | "user_id" | "created_at">;
 
@@ -71,7 +72,7 @@ export default function EventForm({
   editableValues,
   eventId,
 }: {
-  editableValues?: PartialEvent;
+  editableValues?: Selectable<Event>;
   eventId?: number;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -108,7 +109,7 @@ export default function EventForm({
       state: values.state ? values.state : null,
       zipcode: values.zipcode ? values.zipcode : null,
       url: values.url ? values.url : null,
-    } as PartialEvent;
+    };
 
     if (editableValues) {
       const id = Number(eventId);
