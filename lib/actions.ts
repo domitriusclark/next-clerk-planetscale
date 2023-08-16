@@ -3,7 +3,6 @@
 import pscale from "@/lib/database";
 import { Event } from "@/kysely.codegen";
 import { auth } from "@clerk/nextjs";
-import { revalidatePath } from "next/cache";
 import { utapi } from "uploadthing/server";
 import { redirect } from "next/navigation";
 
@@ -40,8 +39,6 @@ export async function createEvent(
 
   const imageUrl = await uploadImage(image);
 
-  console.log(imageUrl);
-
   try {
     await pscale
       .insertInto("event")
@@ -63,11 +60,12 @@ export async function deleteEvent(eventId: number) {
 
   try {
     await pscale.deleteFrom("event").where("id", "=", eventId).execute();
-    revalidatePath("/dashboard");
   } catch (e) {
     console.log(e);
     return { message: e };
   }
+
+  redirect("/dashboard");
 }
 
 export async function updateEvent(
@@ -87,9 +85,10 @@ export async function updateEvent(
       .executeTakeFirst();
 
     console.log("Updated Event");
-    redirect("/dashboard");
   } catch (e) {
     console.log(e);
     return { message: e };
   }
+
+  redirect("/dashboard");
 }

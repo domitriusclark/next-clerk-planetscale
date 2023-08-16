@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { deleteEvent } from "@/lib/actions";
 
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function EventLocation({ eventMode }: { eventMode: string }) {
@@ -43,7 +43,9 @@ export default function EventCard({
   return (
     <Card className="w-full md:w-2/5 lg:w-2/4 xl:w-1/4 h-60">
       <CardHeader>
-        <CardTitle>{event.name}</CardTitle>
+        <Link href={`/dashboard/event/${event.id}`}>
+          <CardTitle>{event.name}</CardTitle>
+        </Link>
         <CardDescription>{event.description}</CardDescription>
       </CardHeader>
       <CardContent>
