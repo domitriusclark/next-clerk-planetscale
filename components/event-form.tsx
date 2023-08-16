@@ -113,9 +113,19 @@ export default function EventForm({
 
     if (editableValues) {
       const id = Number(eventId);
+
+      if (values.cover_image instanceof File) {
+        const image = await getBase64(values.cover_image);
+        await updateEvent(id, event, image);
+      }
+
       await updateEvent(id, event);
     } else {
-      await createEvent(event, await getBase64(values.cover_image));
+      await createEvent(
+        event,
+        await getBase64(values.cover_image),
+        values.cover_image.name
+      );
     }
   }
 
