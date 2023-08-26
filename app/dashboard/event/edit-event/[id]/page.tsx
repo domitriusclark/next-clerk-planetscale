@@ -1,4 +1,4 @@
-import EventForm from "@/components/event-form";
+import EventForm from "@/app/dashboard/event/event-form";
 import pscale from "@/lib/database";
 import { redirect } from "next/navigation";
 

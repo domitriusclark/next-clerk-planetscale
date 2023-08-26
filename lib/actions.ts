@@ -54,19 +54,26 @@ export async function createEvent(
   redirect("/dashboard");
 }
 
-export async function deleteAndReplaceCoverImage(
-  fileToDelete: string,
-  fileToReplace: string,
-  fileName: string
-) {
+export async function deleteCoverImage(fileToDelete: string, eventId: number) {
   try {
-    await utapi.deleteFiles(fileToDelete);
-
-    return await uploadImage(fileToReplace, fileName);
+    // Pull the fileKey from the URL to pass to UploadThing
+    const fileKey = fileToDelete.split("/f/")[1];
+    const deleteFromUT = await utapi.deleteFiles(fileKey);
+    if (deleteFromUT.success === true) {
+      await pscale
+        .updateTable("event")
+        .set({ cover_image: null })
+        .where("id", "=", eventId)
+        .executeTakeFirst();
+    } else {
+      return { message: "Failed to delete image" };
+    }
   } catch (e) {
     console.log(e);
     return { message: e };
   }
+
+  revalidatePath(`/dashboard/event/edit-event/${eventId}`);
 }
 
 export async function deleteEvent(eventId: number) {
@@ -89,7 +96,7 @@ export async function deleteEvent(eventId: number) {
 export async function updateEvent(
   eventId: number,
   event: Updateable<Event>,
-  newImage?: string,
+  image?: string,
   fileName?: string
 ) {
   const { userId } = auth();
@@ -98,43 +105,35 @@ export async function updateEvent(
     return;
   }
 
-  let image: string;
+  let imageUrl;
 
-  if (newImage && fileName && event.cover_image) {
-    const replacedImage = await deleteAndReplaceCoverImage(
-      event.cover_image,
-      newImage,
-      fileName
-    );
+  if (image && fileName) {
+    imageUrl = await uploadImage(image, fileName);
 
-    if (replacedImage === typeof "string") {
-      image = replacedImage;
+    try {
+      await pscale
+        .updateTable("event")
+        .set({ ...event, cover_image: imageUrl })
+        .where("id", "=", eventId)
+        .executeTakeFirst();
 
-      try {
-        await pscale
-          .updateTable("event")
-          .set({ ...event, cover_image: image })
-          .where("id", "=", eventId)
-          .executeTakeFirst();
+      console.log("Updated Event");
+    } catch (e) {
+      console.log(e);
+      return { message: e };
+    }
+  } else {
+    try {
+      await pscale
+        .updateTable("event")
+        .set(event)
+        .where("id", "=", eventId)
+        .executeTakeFirst();
 
-        console.log("Updated Event");
-      } catch (e) {
-        console.log(e);
-        return { message: e };
-      }
-    } else {
-      try {
-        await pscale
-          .updateTable("event")
-          .set(event)
-          .where("id", "=", eventId)
-          .executeTakeFirst();
-
-        console.log("Updated Event");
-      } catch (e) {
-        console.log(e);
-        return { message: e };
-      }
+      console.log("Updated Event");
+    } catch (e) {
+      console.log(e);
+      return { message: e };
     }
   }
 

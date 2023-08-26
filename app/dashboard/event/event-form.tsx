@@ -2,7 +2,7 @@
 import type { Event } from "@/kysely.codegen";
 
 import * as React from "react";
-import { createEvent, updateEvent } from "@/lib/actions";
+import { createEvent, updateEvent, deleteCoverImage } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm, Control, FieldPath } from "react-hook-form";
@@ -10,6 +10,17 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useController } from "react-hook-form";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -39,8 +50,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Selectable } from "kysely";
 
-type PartialEvent = Omit<Event, "id" | "user_id" | "created_at">;
-
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -49,7 +58,7 @@ const formSchema = z.object({
   date: z.date({
     required_error: "Please select a date",
   }),
-  cover_image: z.instanceof(File),
+  cover_image: z.instanceof(File).or(z.string()),
   event_mode: z.string(),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -113,14 +122,20 @@ export default function EventForm({
 
     if (editableValues) {
       const id = Number(eventId);
-
       if (values.cover_image instanceof File) {
-        const image = await getBase64(values.cover_image);
-        await updateEvent(id, event, image);
+        await updateEvent(
+          id,
+          event,
+          await getBase64(values.cover_image),
+          values.cover_image.name
+        );
+      } else {
+        await updateEvent(id, {
+          ...event,
+          cover_image: editableValues.cover_image,
+        });
       }
-
-      await updateEvent(id, event);
-    } else {
+    } else if (values.cover_image instanceof File) {
       await createEvent(
         event,
         await getBase64(values.cover_image),
@@ -137,7 +152,9 @@ export default function EventForm({
         <Form {...form}>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="w-2/3 mt-16 space-y-6 "
+            className={`w-2/3 mt-16 space-y-6 ${
+              editableValues ? "mb-10" : ""
+            } `}
           >
             <EventInputField control={control} />
             <DatePickerField control={control} />
@@ -149,6 +166,8 @@ export default function EventForm({
                   ? editableValues.cover_image
                   : ""
               }
+              hasEditableValues={editableValues ? true : false}
+              eventId={eventId}
             />
             <EventModeSelectField
               control={control}
@@ -209,15 +228,19 @@ function ImageInputField({
   control,
   name,
   imageUrl,
+  hasEditableValues,
+  eventId,
 }: {
   control: Control<z.infer<typeof formSchema>>;
   name: FieldPath<z.infer<typeof formSchema>>;
   imageUrl?: string;
+  hasEditableValues?: boolean;
+  eventId?: number;
 }) {
   const { field } = useController({ name, control });
   const [image, setImage] = React.useState(imageUrl ? imageUrl : "");
 
-  const onAvatarChange = React.useCallback(
+  const onCoverImageChange = React.useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files?.[0]) {
         const base64 = await getBase64(event.target.files[0]);
@@ -229,12 +252,46 @@ function ImageInputField({
     []
   );
 
+  async function onDeleteImage() {
+    if (!eventId) {
+      return;
+    }
+
+    await deleteCoverImage(image, eventId);
+    setImage("");
+  }
+
   return (
     <div className="flex flex-col">
       <Label className="mb-2">Banner Image</Label>
-
-      <Input type="file" onChange={onAvatarChange} />
+      <Input type="file" onChange={onCoverImageChange} />
       {image && <img src={image} className="w-2/3 mt-5 rounded-md " />}
+      {hasEditableValues && (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            {image && (
+              <Button className="mt-4" onClick={() => onDeleteImage()}>
+                Delete
+              </Button>
+            )}
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to delete your image?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                cover image.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }
@@ -317,7 +374,7 @@ function EventModeSelectField({
   editableValues,
 }: {
   control: Control<z.infer<typeof formSchema>>;
-  editableValues?: PartialEvent;
+  editableValues?: Selectable<Event>;
 }) {
   return (
     <FormField

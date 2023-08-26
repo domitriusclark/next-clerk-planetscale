@@ -1,9 +1,9 @@
-import SignIn from "@/components/sign-in";
+import { SignIn } from "@clerk/nextjs";
 
 export default function SignInPage() {
   return (
     <main className="flex items-center justify-center w-screen h-screen">
-      <SignIn />
+      <SignIn afterSignInUrl="/dashboard" />
     </main>
   );
 }

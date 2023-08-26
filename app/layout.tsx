@@ -2,8 +2,8 @@ import "./globals.css";
 import "@uploadthing/react/styles.css";
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import Navbar from "@/components/navbar";
-import ThemeProvider from "@/components/theme-provider";
+import Navbar from "@/components/ui/navbar";
+import ThemeProvider from "@/app/theme-provider";
 
 export const metadata: Metadata = {
   title: "Clerk Events App",
