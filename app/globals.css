@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
+/* Theme from shadcn/ui */
 
 @layer base {
   :root {
@@ -50,4 +49,40 @@
     --input: 240 3.7% 15.9%;
     --ring: 346.8 77.2% 49.8%;
   }
+}
+
+/* Clerk Component Style Overrides */
+
+[class^='cl-'] {
+  @apply text-black dark:text-white;  
+}
+
+.cl-userButtonPopoverCard {
+  @apply border border-black bg-background dark:bg-popover dark:border dark:border-white;  
+}
+
+.cl-userButtPopoverFooter {
+  @apply text-white;
+}
+
+.cl-userButtonPopoverActionButton {
+  &:hover {
+     @apply bg-ring/70;
+   }
+}
+
+.cl-scrollBox {
+  @apply border border-black bg-background dark:bg-card dark:border dark:border-white;  
+}
+
+.cl-card {
+  @apply border border-black bg-background dark:bg-card dark:border dark:border-white;  
+}
+
+.cl-formFieldInput {
+  @apply flex w-full h-10 px-3 py-2 text-sm border rounded-md border-input bg-background ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.cl-formButtonPrimary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
 }

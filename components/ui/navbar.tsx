@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
-import UserButton from "./user-button";
+import { UserButton } from "@clerk/nextjs";
 import { ModeToggle } from "./theme-toggle";
 
 export default function Navbar() {

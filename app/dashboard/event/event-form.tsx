@@ -1,8 +1,10 @@
 "use client";
+import { Selectable } from "kysely";
 import type { Event } from "@/kysely.codegen";
 
-import * as React from "react";
 import { createEvent, updateEvent, deleteCoverImage } from "@/lib/actions";
+
+import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm, Control, FieldPath } from "react-hook-form";
@@ -48,7 +50,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Selectable } from "kysely";
 
 const formSchema = z.object({
   name: z.string().min(2, {
